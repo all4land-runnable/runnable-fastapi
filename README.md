@@ -80,6 +80,7 @@ MODEL_VERSION={your_llm_ollama_model}
 | torch              | PyTorch—tensor library and deep learning framework (CPU/GPU).                                             | 2.8.0   |
 | transformers       | Hugging Face Transformers—pretrained model hub & pipelines for NLP/Vision/Audio.                          | 4.55.2  |
 | uvicorn            | Lightning-fast ASGI server (often used to serve FastAPI apps).                                            | 0.35.0  |
+| SQLAlchemy         | TODO                                                                                                      | 2.0.43  |
 
 
 # Support

@@ -1,56 +1,49 @@
-# app/repositories/users_repository.py
-from typing import Protocol, Optional, List
+# app/routers/users/users_repository.py
+from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.routers.users.users import Users
 
-class UsersRepository(Protocol):
-    def save_new(self, user: Users) -> Users: ...
-    def update(self, user: Users) -> Users: ...
-    def find_by_id(self, user_id: int) -> Optional[Users]: ...
-    def find_by_email(self, email: str) -> Optional[Users]: ...
-    def find_by_username(self, username: str) -> Optional[Users]: ...
-    def find_all(self) -> List[Users]: ...
-    def delete(self, user: Users) -> None: ...
-    def delete_by_id(self, user_id: int) -> bool: ...
-
-class SqlAlchemyUsersRepository(UsersRepository):
-    def __init__(self, db: Session) -> None:
-        self.db = db
+class UsersRepository:
+    def __init__(self, database: Session) -> None:
+        # Repository는 DB 접근 전용. 트랜잭션(Commit/Rollback) 모름.
+        self.database = database
 
     # 트랜잭션은 Service가 관리 → 여기선 commit() 하지 않음
-    def save_new(self, user: Users) -> Users:
-        self.db.add(user)
-        self.db.flush()          # PK 미리 확보가 필요할 수 있어 flush
-        return user
-
-    def update(self, user: Users) -> Users:
-        # 변경감지(autoflush) 기반이라 별도 작업 불필요
-        self.db.flush()
+    def save(self, user: Users) -> Users:
+        # add로 pending에 올리고, flush로 즉시 INSERT 실행 + PK 확보.
+        self.database.add(user)
+        self.database.flush()   # PK 확보/조기 예외 감지
         return user
 
     def find_by_id(self, user_id: int) -> Optional[Users]:
-        return self.db.get(Users, user_id)
+        # PK 조회 최단코스. 없으면 None.
+        return self.database.get(Users, user_id)
 
     def find_by_email(self, email: str) -> Optional[Users]:
-        return self.db.execute(
+        # 유니크 조건 가정. 0/1 건만 나와야 함.
+        return self.database.execute(
             select(Users).where(Users.email == email)
         ).scalar_one_or_none()
 
     def find_by_username(self, username: str) -> Optional[Users]:
-        return self.db.execute(
+        # 마찬가지로 유니크 가정.
+        return self.database.execute(
             select(Users).where(Users.username == username)
         ).scalar_one_or_none()
 
     def find_all(self) -> List[Users]:
-        return list(self.db.execute(select(Users)).scalars().all())
+        # 전체 조회. scalars()로 엔티티 컬럼만 뽑고, all() → list 캐스팅.
+        return list(self.database.execute(select(Users)).scalars().all())
 
     def delete(self, user: Users) -> None:
-        self.db.delete(user)
+        # 삭제는 Service에서 commit으로 마무리.
+        self.database.delete(user)
 
     def delete_by_id(self, user_id: int) -> bool:
+        # 편의용. True면 삭제 예정 상태, 커밋은 Service에서.
         user = self.find_by_id(user_id)
         if not user:
             return False
-        self.db.delete(user)
+        self.database.delete(user)
         return True
