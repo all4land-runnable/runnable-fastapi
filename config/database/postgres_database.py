@@ -1,56 +1,40 @@
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
+from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from typing import Generator
 
-import psycopg2
-from psycopg2 import DatabaseError
+POSTGRES_HOST = os.getenv('POSTGRES_HOST')
+POSTGRES_DATABASE = os.getenv('POSTGRES_DATABASE')
+POSTGRES_USER = os.getenv('POSTGRES_USER')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+POSTGRES_PORT = int(os.getenv('POSTGRES_PORT'))
 
-from app.internal.exception.controlled_exception import ControlledException, ErrorMessage
-from app.internal.exception.errorcode import basic_error_code
-from config.common.common_database import CommonDatabase
-from config.common.singleton import Singleton
+# database 생성 URL
+SQLARCHEMY_DATABASE_URL = URL.create(
+    drivername="postgresql+psycopg",
+    host=POSTGRES_HOST,
+    database=POSTGRES_DATABASE,
+    username=POSTGRES_USER,
+    password=POSTGRES_PASSWORD,
+    port=POSTGRES_PORT
+)
 
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE")
-POSTGRES_USER = os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+# Engine 구축
+# Engine: SqlAlchemy에서 데이터베이스와 연결을 생성하는 객체
+engine = create_engine(
+    SQLARCHEMY_DATABASE_URL,
+    pool_pre_ping=True, # 죽은 커넥션 자동 복구
+)
 
-# TODO 1. 멀티스레드로 다중성 관리하기 # ConnectionPool
-class PostgresDatabase(CommonDatabase, metaclass=Singleton):
-    """
-    PostgreSQL을 이용하기 위한 클래스
+# Session 구현
+# Session: ORM이 실제로 DB와 통신할 때 사용하는 작업 단위 (add, commit, query 등 처리)
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
+Base = declarative_base()
 
-    psycopg2를 이용한 CommonDatabase 구현체
-    """
-    _connection = None
-
-    def __init__(self, host=POSTGRES_HOST, database=POSTGRES_DATABASE, user=POSTGRES_USER, password=POSTGRES_PASSWORD, port=POSTGRES_PORT):
-        self._connection = psycopg2.connect(
-            host=host,
-            database=database,
-            user=user,
-            password=password,
-            port=port
-        )
-
-    def get_connection(self):
-        return self._connection
-
-    def get_cursor(self):
-        return self._connection.cursor()
-
-    def execute_update(self, sql: str, values: tuple=()):
-        try:
-            with self.get_cursor() as cursor:
-                cursor.execute(sql, values)
-            self._connection.commit()
-        except DatabaseError:
-            self._connection.rollback()
-            raise ControlledException(basic_error_code.DATABASE_ERROR)
-
-    def execute_query(self, sql: str, values: tuple=()):
-        try:
-            with self.get_cursor() as cursor:
-                cursor.execute(sql, values)
-                return cursor.fetchall()
-        except DatabaseError:
-            raise ControlledException(basic_error_code.DATABASE_ERROR)
+def get_database() -> Generator[Session, None, None]:
+    database = SessionLocal()
+    try:
+        yield database
+    finally:
+        database.close()

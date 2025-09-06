@@ -1,65 +1,80 @@
-from typing import List
+# app/services/users_service.py
+from typing import Optional, List
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.internal.exception.controlled_exception import ControlledException
-from app.internal.exception.errorcode import basic_error_code
-from app.internal.utils.optional_helper import or_else_throw
-from app.routers.users import users_repository
+from app.internal.exception.errorcode import user_error_code
 from app.routers.users.users import Users
-from app.routers.users.users_dto import UsersDTO
+from app.routers.users.users_dto import UserCreate
+from app.routers.users.users_repository import UsersRepository, SqlAlchemyUsersRepository
 
 
-def create(users_dto: UsersDTO) -> Users:
-    newUser = Users(
-        id=users_dto.id,
-        email=users_dto.email,
-        password=users_dto.password,
-        username=users_dto.username,
-        created_at=users_dto.created_at,
-        updated_at=users_dto.updated_at
+# 생성
+def create_user(database: Session, payload: UserCreate, repo: UsersRepository | None = None) -> Users:
+    repo = repo or SqlAlchemyUsersRepository(database)
+    user = Users(
+        email=payload.email,
+        username=payload.username,
+        password=payload.password,  # TODO: 해시로 변경
     )
+    repo.save_new(user)
+    try:
+        database.commit()
+    except IntegrityError as e:
+        database.rollback()
+        raise ControlledException(user_error_code.DUPLICATE_KEY) from e
+    database.refresh(user)
+    return user
 
-    return users_repository.insert_into(newUser)
+# 조회 (Optional 반환: JPA Optional 느낌)
+def find_by_id(database: Session, user_id: int,
+               repo: UsersRepository | None = None) -> Optional[Users]:
+    repo = repo or SqlAlchemyUsersRepository(database)
+    return repo.find_by_id(user_id)
 
-def update(users_dto: UsersDTO) -> Users:
-    user = or_else_throw(
-        value=users_repository.find_by_id(users_dto.id),
-        error=ControlledException(basic_error_code.DATABASE_ERROR)
-    )
+def find_by_email(database: Session, email: str,
+                  repo: UsersRepository | None = None) -> Optional[Users]:
+    repo = repo or SqlAlchemyUsersRepository(database)
+    return repo.find_by_email(email)
 
-    if users_dto.email is not None:
-        user.email = users_dto.email
-    if users_dto.password is not None:
-        user.password = users_dto.password
-    if users_dto.username is not None:
-        user.username = users_dto.username
+def find_by_username(database: Session, username: str,
+                     repo: UsersRepository | None = None) -> Optional[Users]:
+    repo = repo or SqlAlchemyUsersRepository(database)
+    return repo.find_by_username(username)
 
-    return users_repository.update_into(user)
+def find_all(database: Session,
+             repo: UsersRepository | None = None) -> List[Users]:
+    repo = repo or SqlAlchemyUsersRepository(database)
+    return repo.find_all()
 
-def delete(users_dto: UsersDTO) -> Users:
-    user = or_else_throw(
-        value=users_repository.find_by_id(users_dto.id),
-        error=ControlledException(basic_error_code.DATABASE_ERROR)
-    )
+# 갱신 (Service에서 존재확인 + 트랜잭션/예외 매핑)
+def update_user_by_id(database: Session, user_id: int, **fields) -> Users:
+    repo = SqlAlchemyUsersRepository(database)
+    user = repo.find_by_id(user_id)
+    if not user:
+        raise ControlledException(user_error_code.USER_NOT_FOUND)
 
-    return users_repository.delete_users(user)
+    allowed = {"email", "username", "password", "is_active"}  # password는 해시 저장
+    for k, v in fields.items():
+        if k in allowed and v is not None:
+            setattr(user, k, v)
 
-def find_by_id(user_id: int) -> Users:
-    return or_else_throw(
-        value=users_repository.find_by_id(user_id),
-        error=ControlledException(basic_error_code.DATABASE_ERROR)
-    )
+    try:
+        database.commit()
+    except IntegrityError as e:
+        database.rollback()
+        raise ControlledException(user_error_code.DUPLICATE_KEY) from e
+    database.refresh(user)
+    return user
 
-def find_by_email(email: str) -> Users:
-    return or_else_throw(
-        value=users_repository.find_by_email(email),
-        error=ControlledException(basic_error_code.DATABASE_ERROR)
-    )
+# 삭제 (Service에서 존재확인/예외 변환)
+def delete_user_by_id(database: Session, user_id: int) -> Users:
+    repo = SqlAlchemyUsersRepository(database)
+    user = repo.find_by_id(user_id)
+    if not user:
+        raise ControlledException(user_error_code.USER_NOT_FOUND)
 
-def find_by_username(username: str) -> Users:
-    return or_else_throw(
-        value=users_repository.find_by_username(username),
-        error=ControlledException(basic_error_code.DATABASE_ERROR)
-    )
-
-def find_all() -> List[Users]:
-    return users_repository.find_all()
+    repo.delete(user)
+    database.commit()
+    return user

@@ -1,12 +1,33 @@
 from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel, ConfigDict  # EmailStr 제거
 
-from pydantic import BaseModel
-
-
-class UsersDTO(BaseModel):
-    id: int
-    email: str
-    password: str
+# 공통 입력 필드
+class UserBase(BaseModel):
+    email: str         # EmailStr -> str
     username: str
-    created_at: datetime = datetime.now()
-    updated_at: datetime = datetime.now()
+
+# 생성용 입력 DTO
+class UserCreate(UserBase):
+    password: str
+
+# 부분 수정용 DTO
+class UserUpdate(BaseModel):
+    id: int
+    email: Optional[str] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+    is_active: Optional[bool] = None
+
+# 삭제용 DTO
+class UserDelete(BaseModel):
+    id: int
+
+# 출력용 DTO
+class UserOut(UserBase):
+    id: int
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

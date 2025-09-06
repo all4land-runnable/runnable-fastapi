@@ -1,97 +1,56 @@
-from datetime import datetime
-from typing import Optional
-
+# app/repositories/users_repository.py
+from typing import Protocol, Optional, List
+from sqlalchemy.orm import Session
+from sqlalchemy import select
 from app.routers.users.users import Users
-from config.database.postgres_database import PostgresDatabase
 
-database = PostgresDatabase()
+class UsersRepository(Protocol):
+    def save_new(self, user: Users) -> Users: ...
+    def update(self, user: Users) -> Users: ...
+    def find_by_id(self, user_id: int) -> Optional[Users]: ...
+    def find_by_email(self, email: str) -> Optional[Users]: ...
+    def find_by_username(self, username: str) -> Optional[Users]: ...
+    def find_all(self) -> List[Users]: ...
+    def delete(self, user: Users) -> None: ...
+    def delete_by_id(self, user_id: int) -> bool: ...
 
-def create_users() -> str:
-    database.execute_update(
-        sql="CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, email VARCHAR(255) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, username VARCHAR(255) NOT NULL, created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"
-    )
-    return "users 테이블이 생성되었습니다."
+class SqlAlchemyUsersRepository(UsersRepository):
+    def __init__(self, db: Session) -> None:
+        self.db = db
 
-def drop_users() -> str:
-    database.execute_update(
-        sql="DROP TABLE IF EXISTS users"
-    )
-    return "users 테이블이 삭제되었습니다."
+    # 트랜잭션은 Service가 관리 → 여기선 commit() 하지 않음
+    def save_new(self, user: Users) -> Users:
+        self.db.add(user)
+        self.db.flush()          # PK 미리 확보가 필요할 수 있어 flush
+        return user
 
-def has_tone()->bool:
-    return 1 == database.execute_query(
-        sql="SELECT 1 FROM Information_schema.tables WHERE table_name = 'users' AND table_schema = 'public'"
-    )
+    def update(self, user: Users) -> Users:
+        # 변경감지(autoflush) 기반이라 별도 작업 불필요
+        self.db.flush()
+        return user
 
-def insert_into(user: Users) -> Users:
-    database.execute_update(
-        sql="INSERT INTO users (email, password, username, created_at, updated_at) VALUES (%s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
-        values=(user.email, user.password, user.username, user.created_at, datetime.now()),
-    )
-    return user
+    def find_by_id(self, user_id: int) -> Optional[Users]:
+        return self.db.get(Users, user_id)
 
-def update_into(user: Users) -> Users:
-    database.execute_update(
-        sql="UPDATE users SET email=%s, password=%s, username=%s, updated_at=CURRENT_TIMESTAMP WHERE id = %s",
-        values=(user.email, user.password, user.username, user.id),
-    )
-    return user
+    def find_by_email(self, email: str) -> Optional[Users]:
+        return self.db.execute(
+            select(Users).where(Users.email == email)
+        ).scalar_one_or_none()
 
-def upsert_into(user: Users) -> Users:
-    user = database.execute_query(
-        sql="""
-        INSERT INTO public.users (email, password, username)
-        VALUES (%s, %s, %s)
-        ON CONFLICT (email) DO UPDATE
-          SET password   = EXCLUDED.password,
-              username   = EXCLUDED.username,
-              updated_at = CURRENT_TIMESTAMP
-        RETURNING id, email, password, username, created_at, updated_at
-        """,
-        values=(user.email, user.password, user.username),
-    )
-    return user
+    def find_by_username(self, username: str) -> Optional[Users]:
+        return self.db.execute(
+            select(Users).where(Users.username == username)
+        ).scalar_one_or_none()
 
-def save(user: Users) -> Users:
-    return update_into(user)
+    def find_all(self) -> List[Users]:
+        return list(self.db.execute(select(Users)).scalars().all())
 
-def delete_users(user: Users) -> Users:
-    database.execute_update(
-        sql="DELETE FROM users WHERE id = %s",
-        values=(user.id,),
-    )
-    return user
+    def delete(self, user: Users) -> None:
+        self.db.delete(user)
 
-def has_user(id: int) -> bool:
-    user = database.execute_query(
-        sql="SELECT * FROM users WHERE id = %s",
-        values=(id,),
-    )
-    return bool(user)
-
-def find_by_id(id: int) -> Optional[Users]:
-    user = database.execute_query(
-        sql="SELECT * FROM users WHERE id = %s",
-        values=(id,)
-    )
-    return Users(**user[0]) if user else None
-
-def find_by_email(email: str) -> Optional[Users]:
-    user = database.execute_query(
-        sql="SELECT * FROM users WHERE email = %s",
-        values=(email,)
-    )
-    return Users(**user[0]) if user else None
-
-def find_by_username(username: str) -> Optional[Users]:
-    user = database.execute_query(
-        sql="SELECT * FROM users WHERE username = %s",
-        values=(username,)
-    )
-    return Users(**user[0]) if user else None
-
-def find_all() -> Optional[list[Users]]:
-    users = database.execute_query(
-        sql="SELECT * FROM public.users"
-    )
-    return [Users(**user) for user in users]
+    def delete_by_id(self, user_id: int) -> bool:
+        user = self.find_by_id(user_id)
+        if not user:
+            return False
+        self.db.delete(user)
+        return True
