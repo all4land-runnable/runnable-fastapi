@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from textwrap import dedent
 from typing import Any
 
+from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 
 from app.internal.exception.controlled_exception import ControlledException
