@@ -1,6 +1,7 @@
 # app/routers/users/users_service.py
 from typing import List
 
+from sqlalchemy import DateTime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
