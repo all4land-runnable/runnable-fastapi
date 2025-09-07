@@ -13,7 +13,7 @@ class UserCreate(UserBase):
 
 # 부분 수정용 DTO
 class UserUpdate(BaseModel):
-    id: int
+    user_id: int
     email: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
@@ -21,11 +21,11 @@ class UserUpdate(BaseModel):
 
 # 삭제용 DTO
 class UserDelete(BaseModel):
-    id: int
+    user_id: int
 
 # 출력용 DTO
 class UserOut(UserBase):
-    id: int
+    user_id: int
     is_deleted: bool
     created_at: datetime
     updated_at: datetime
