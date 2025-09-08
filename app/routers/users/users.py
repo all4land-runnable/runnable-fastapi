@@ -12,7 +12,6 @@ class Users(Base):
 
     age = Column(Integer, nullable=False)
     runner_since = Column(Integer, nullable=False)
-    running_shoes = Column(Integer, nullable=False)
     pace_average = Column(Integer, nullable=False)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))

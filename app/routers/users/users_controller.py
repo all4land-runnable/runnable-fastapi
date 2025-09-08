@@ -42,13 +42,13 @@ def update(user_update: UserUpdate, users_service: UsersService = Depends(get_us
 
 # 삭제
 @router.delete(
-    "",
+    "/{user_id}",
     response_model=CommonResponse[UserOut],
     status_code=status.HTTP_200_OK,
 )
-def delete(user_delete: UserDelete, users_service: UsersService = Depends(get_users_service)):
+def delete(user_id: int, users_service: UsersService = Depends(get_users_service)):
     # id로 삭제. 없으면 ControlledException으로 터뜨림 → 전역 핸들러에서 공통 처리.
-    user = users_service.delete_user_by_id(user_delete.id)
+    user = users_service.delete_user_by_id(user_id)
     return CommonResponse(code=200, message="유저 삭제 성공", data=user)
 
 # 전체 조회
@@ -84,11 +84,11 @@ def read_by_username(username: str, users_service: UsersService = Depends(get_us
     return CommonResponse(code=200, message="유저 조회 성공", data=user)
 
 @router.get(
-    "/{id}",
+    "/{user_id}",
     response_model=CommonResponse[UserOut],
     status_code=status.HTTP_200_OK,
 )
-def read_by_id(id: int, users_service: UsersService = Depends(get_users_service)):
+def read_by_id(user_id: int, users_service: UsersService = Depends(get_users_service)):
     # 동적 파라미터는 맨 마지막. 경로 충돌 방지.
-    user = users_service.find_by_id(id)
+    user = users_service.find_by_id(user_id)
     return CommonResponse(code=200, message="유저 조회 성공", data=user)

@@ -23,3 +23,5 @@ langchain-core~=0.3.75
 numpy~=2.2.5
 SQLAlchemy~=2.0.43
 requests~=2.32.4
+app~=0.0.1
+pytest~=8.4.2
