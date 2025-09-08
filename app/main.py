@@ -1,6 +1,6 @@
 # app/main.py
 from dotenv import load_dotenv
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 
 from app.internal.exception.exception_handler import global_exception_handlers
 
@@ -11,7 +11,9 @@ from fastapi import FastAPI
 app = FastAPI(title="runnable-fastapi")
 
 # 팔문 개방
-origins = ["*"]
+origins = [
+    '*'
+]
 
 app.add_middleware(
     CORSMiddleware,
