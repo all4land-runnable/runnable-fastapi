@@ -1,5 +1,6 @@
 # app/main.py
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.internal.exception.exception_handler import global_exception_handlers
 
@@ -8,6 +9,17 @@ load_dotenv()
 
 from fastapi import FastAPI
 app = FastAPI(title="runnable-fastapi")
+
+# 팔문 개방
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # NOTE 2. Base/engine은 DB 모듈에서 가져온다 (여기서 환경변수 읽힘)
 from config.database.postgres_database import Base, engine, ensure_postgis

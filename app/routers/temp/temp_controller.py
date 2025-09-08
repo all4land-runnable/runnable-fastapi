@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from starlette import status
 
+from app.routers.temp.temp import SlopeDatum
 from app.routers.temp.temp_dto import TempBase
 from app.routers.temp.temp_service import TempService
 from config.common.common_response import CommonResponse
@@ -42,4 +43,16 @@ def create_temp(temp_base: TempBase, temp_service: TempService = Depends(get_tem
         code=201,
         message="답변 전송 완료",
         data=temp
+    )
+
+@router.post(
+    "/calc",
+    response_model=CommonResponse[list[SlopeDatum]],
+    status_code=status.HTTP_200_OK,
+)
+def calc_slope_datum(slope_datums:list[SlopeDatum], temp_service: TempService = Depends(get_temp_service)):
+    return CommonResponse(
+        code=200,
+        message="페이스 분석 완료",
+        data=[]
     )
