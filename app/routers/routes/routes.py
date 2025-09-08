@@ -1,3 +1,4 @@
+# app/routers/routes/routes.py
 from sqlalchemy import Column, Integer, Identity, String, Boolean, DateTime, text, func, Float
 
 from config.database.postgres_database import Base
@@ -7,7 +8,7 @@ class Routes(Base):
     __tablename__ = "routes"
 
     route_id = Column(Integer, Identity(start=1, always=False), primary_key=True)
-    title = Column(String(255), nullable=True)
+    title = Column(String(255), nullable=False)
     description = Column(String(255), nullable=False)
 
     distance = Column(Integer, nullable=False)

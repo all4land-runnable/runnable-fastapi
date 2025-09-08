@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 
-class PaceBase(BaseModel):
+class TempBase(BaseModel):
     message: str

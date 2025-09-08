@@ -14,14 +14,17 @@ from config.database.postgres_database import Base, engine
 
 # NOTE 3. 모델 모듈 import: 매핑 등록을 위해 필수 (Users가 Base에 attach됨)
 from app.routers.users import users_controller  # 변수 미사용이어도 OK. import 자체가 중요.
-from app.routers.pace import paces_controller
+from app.routers.routes import routes_controller
+from app.routers.temp import temp_controller
 
 # NOTE 4. 테이블 생성
 Base.metadata.create_all(bind=engine)
 
 # NOTE 5. 라우터 연결
 app.include_router(users_controller.router, prefix='/api/v1', tags=['users'])
-app.include_router(paces_controller.router, prefix="/api/v1", tags=["paces"])
+app.include_router(routes_controller.router, prefix="/api/v1", tags=["routes"])
+app.include_router(temp_controller.router, prefix="/api/v1", tags=["temp"])
+
 
 # NOTE 6. 에러 핸들러 연결
 global_exception_handlers(app)
