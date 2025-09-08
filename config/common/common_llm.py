@@ -103,7 +103,7 @@ class CommonLLM(ABC):
     def clean_json_string(text: str) -> str:
         """
         요약:
-            LLM이 출력한 문자열에서 \`\`\`json, \`\`\` 마커와
+            LLM이 출력한 문자열에서 json, ` 마커와
             <think> ... </think> 블록을 제거하고 양쪽 공백을 정리한다.
 
         Parameters:
