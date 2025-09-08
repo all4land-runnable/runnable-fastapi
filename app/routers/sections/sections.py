@@ -18,4 +18,4 @@ class Sections(Base):
     end_longitude = Column(Float, nullable=False)
     end_height = Column(Float, nullable=False)
 
-    slope = Column(Integer, nullable=False) # TODO 타입 수정
+    slope = Column(Float, nullable=False) # TODO 타입 수정

@@ -25,6 +25,7 @@ from app.routers.pace_records import pace_records_controller
 from app.routers.sections import sections_controller
 from app.routers.user_paces import user_paces_controller
 from app.routers.route_geoms import route_geoms_controller
+from app.routers.dataset import dataset_controller
 
 # NOTE 4. 테이블 생성
 ensure_postgis()
@@ -43,6 +44,7 @@ app.include_router(pace_records_controller.router, prefix="/api/v1", tags=["pace
 app.include_router(sections_controller.router, prefix="/api/v1", tags=["sections"])
 app.include_router(user_paces_controller.router, prefix="/api/v1", tags=["user_paces"])
 app.include_router(route_geoms_controller.router, prefix="/api/v1", tags=["route_geoms"])
+app.include_router(dataset_controller.router, prefix="/api/v1", tags=["dataset"])
 
 # NOTE 6. 에러 핸들러 연결
 global_exception_handlers(app)

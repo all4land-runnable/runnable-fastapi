@@ -1,4 +1,4 @@
-# config/common/singleton.py
+# config/dataset/singleton.py
 import threading
 from abc import ABCMeta
 
