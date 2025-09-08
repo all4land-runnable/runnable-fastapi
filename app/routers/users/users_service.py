@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from app.internal.exception.controlled_exception import ControlledException
-from app.internal.exception.errorcode import user_error_code
+from app.internal.exception.errorcode import users_error_code
 from app.routers.users.users import Users
 from app.routers.users.users_dto import UserCreate, UserUpdate
 from app.routers.users.users_repository import UsersRepository
@@ -72,7 +72,6 @@ class UsersService:
         if not user:
             raise ControlledException(user_error_code.USER_NOT_FOUND)
 
-        # [명준 주석]
         # - 화이트리스트 필드만 반영. 실수로 다른 속성 들어오는 것 차단.
         allowed = {"email", "username", "password", "is_deleted", "age", "runner_since", "pace_average"}
         data = user_update.model_dump(exclude_none=True) # None 값들은 아예 제외

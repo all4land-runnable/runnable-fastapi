@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from app.internal.exception.controlled_exception import ControlledException
-from app.internal.exception.errorcode import route_error_code
+from app.internal.exception.errorcode import routes_error_code
 from app.routers.routes.routes import Routes
 from app.routers.routes.routes_dto import RouteCreate, RouteUpdate
 from app.routers.routes.routes_repository import RoutesRepository
