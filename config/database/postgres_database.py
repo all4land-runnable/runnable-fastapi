@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from typing import Generator
@@ -38,3 +38,13 @@ def get_database() -> Generator[Session, None, None]:
         yield database
     finally:
         database.close()
+
+
+def ensure_postgis():
+    # DB에 접속해 PostGIS 확장을 켭니다. (권한 없으면 그냥 무시)
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
+    except Exception:
+        # RDS 등에서 권한이 없을 수 있음 → 애플리케이션은 계속 구동
+        pass

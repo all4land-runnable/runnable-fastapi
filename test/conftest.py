@@ -3,7 +3,7 @@ import os
 from typing import Any, Generator
 
 import pytest
-from sqlalchemy import create_engine, event, URL
+from sqlalchemy import create_engine, event, URL, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import NullPool
 
@@ -33,7 +33,11 @@ TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=Fals
 
 @pytest.fixture(scope="session", autouse=True)
 def _create_test_schema():
-    # 마이그레이션을 쓰면, 여기서 Alembic을 돌리세요. (예: command.upgrade("head"))
+    # 1) 먼저 PostGIS 확장을 켠다 (해당 DB에 한번만)
+    with engine.begin() as conn:
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
+
+    # 2) 그 다음에 모델 테이블 생성
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)

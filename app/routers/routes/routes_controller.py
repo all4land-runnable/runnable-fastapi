@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from starlette import status
 from sqlalchemy.orm import Session
 
-from app.routers.routes.routes_dto import RouteCreate, RouteUpdate, RouteDelete, RouteOut
+from app.routers.routes.routes_dto import RouteCreate, RouteUpdate, RouteOut
 from app.routers.routes.routes_repository import RoutesRepository
 from app.routers.routes.routes_service import RoutesService
 from config.common.common_response import CommonResponse

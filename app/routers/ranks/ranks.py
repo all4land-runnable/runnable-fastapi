@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, ForeignKey, Identity
 from config.database.postgres_database import Base
 
 
-class ranks(Base):
+class Ranks(Base):
     __tablename__ = "ranks"
 
     rank_id = Column(Integer, Identity(start=1, always=False), primary_key=True)

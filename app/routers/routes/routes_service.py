@@ -30,7 +30,7 @@ class RoutesService:
         except IntegrityError as e:
             self.database.rollback()
             # (현재 유니크 제약은 없지만, 제약 위반 등 DB 오류를 공통 코드로 매핑)
-            raise ControlledException(route_error_code.DUPLICATE_KEY) from e
+            raise ControlledException(routes_error_code.DUPLICATE_KEY) from e
         self.database.refresh(route) # server_default/trigger 동기화
         return route
 
@@ -39,14 +39,14 @@ class RoutesService:
         # Optional → 존재 보장으로 승격(없으면 예외)
         route = self.routes_repository.find_by_id(route_id)
         if not route:
-            raise ControlledException(route_error_code.ROUTE_NOT_FOUND)
+            raise ControlledException(routes_error_code.ROUTE_NOT_FOUND)
         return route
 
     def find_all(self) -> List[Routes]:
         routes = self.routes_repository.find_all()
         if not routes:
             # 리스트가 비어도 도메인 예외로 처리(사용자 경험 통일)
-            raise ControlledException(route_error_code.ROUTE_NOT_FOUND)
+            raise ControlledException(routes_error_code.ROUTE_NOT_FOUND)
         return routes
 
     # 갱신
@@ -54,7 +54,7 @@ class RoutesService:
         # 존재 확인부터. 여기서 못 찾으면 아래 로직 전부 스킵.
         route = self.routes_repository.find_by_id(route_update.route_id)
         if not route:
-            raise ControlledException(route_error_code.ROUTE_NOT_FOUND)
+            raise ControlledException(routes_error_code.ROUTE_NOT_FOUND)
 
         # - 화이트리스트 필드만 반영. 실수로 다른 속성 들어오는 것 차단.
         allowed = {"title", "description", "distance", "high_height", "low_height", "is_deleted"}
@@ -68,7 +68,7 @@ class RoutesService:
         except IntegrityError as e:
             self.database.rollback()
             # 갱신 중 제약 위반도 동일하게 매핑
-            raise ControlledException(route_error_code.DUPLICATE_KEY) from e
+            raise ControlledException(routes_error_code.DUPLICATE_KEY) from e
         self.database.refresh(route)
         return route
 
@@ -77,7 +77,7 @@ class RoutesService:
         # 먼저 존재 확인 → 없으면 도메인 예외
         route = self.routes_repository.find_by_id(route_id)
         if not route:
-            raise ControlledException(route_error_code.ROUTE_NOT_FOUND)
+            raise ControlledException(routes_error_code.ROUTE_NOT_FOUND)
         self.routes_repository.delete(route)
         self.database.commit()  # delete는 커밋까지 해야 반영
         return route
