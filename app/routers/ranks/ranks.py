@@ -1,3 +1,4 @@
+# app/routers/ranks/ranks.py
 from sqlalchemy import Column, Integer, ForeignKey, Identity
 
 from config.database.postgres_database import Base

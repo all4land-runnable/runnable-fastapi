@@ -1,3 +1,4 @@
+# app/internal/exception/errorcode/routes_error_code.py
 from app.internal.exception.error_message import ErrorMessage
 
 DUPLICATE_KEY = ErrorMessage(404, "중복된 정보 입니다.")

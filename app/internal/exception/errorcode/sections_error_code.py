@@ -1,3 +1,4 @@
+# app/internal/exception/errorcode/sections_error_code.py
 from app.internal.exception.error_message import ErrorMessage
 
 DUPLICATE_KEY = ErrorMessage(404, "중복된 섹션 데이터 입니다.")

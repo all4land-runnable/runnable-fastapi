@@ -2,8 +2,8 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-# 모델이 class ranks 로 정의되었다면 alias로 불러온다.
 from app.routers.ranks.ranks import Ranks
+
 
 class RanksRepository:
     def __init__(self, database: Session) -> None:

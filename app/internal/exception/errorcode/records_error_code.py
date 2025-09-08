@@ -1,4 +1,4 @@
-# app/internal/exception/errorcode/record_error_code.py
+# app/internal/exception/errorcode/records_error_code.py
 from app.internal.exception.error_message import ErrorMessage
 
 RECORD_NOT_FOUND = ErrorMessage(404, "기록을 찾을 수 없습니다.")

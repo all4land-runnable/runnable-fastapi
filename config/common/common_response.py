@@ -1,3 +1,4 @@
+# config/common/common_response.py
 from typing import Generic, Optional, TypeVar
 
 from pydantic import BaseModel

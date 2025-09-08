@@ -1,4 +1,4 @@
-# app/internal/exception/errorcode/user_pace_error_code.py
+# app/internal/exception/errorcode/user_paces_error_code.py
 from app.internal.exception.error_message import ErrorMessage
 
 DUPLICATE_KEY = ErrorMessage(404, "중복된 사용자 페이스 입니다.")

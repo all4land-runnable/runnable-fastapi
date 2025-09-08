@@ -1,3 +1,4 @@
+# config/database/schemas.py
 from pydantic import BaseModel
 
 

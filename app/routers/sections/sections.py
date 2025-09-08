@@ -1,3 +1,4 @@
+# app/routers/sections/sections.py
 from sqlalchemy import Column, Integer, Identity, ForeignKey, Float
 
 from config.database.postgres_database import Base

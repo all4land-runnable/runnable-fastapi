@@ -1,3 +1,4 @@
+# app/routers/pace_records/pace_records.py
 from sqlalchemy import ForeignKey, Column, Integer, Identity
 
 from config.database.postgres_database import Base

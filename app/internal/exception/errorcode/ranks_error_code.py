@@ -1,4 +1,4 @@
-# app/internal/exception/errorcode/rank_error_code.py
+# app/internal/exception/errorcode/ranks_error_code.py
 from app.internal.exception.error_message import ErrorMessage
 
 RANK_NOT_FOUND = ErrorMessage(404, "랭크를 찾을 수 없습니다.")

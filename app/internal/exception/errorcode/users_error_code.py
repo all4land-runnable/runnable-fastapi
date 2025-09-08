@@ -1,4 +1,4 @@
-#
+# app/internal/exception/errorcode/users_error_code.py
 from app.internal.exception.error_message import ErrorMessage
 
 DUPLICATE_KEY = ErrorMessage(404, "중복된 이메일/사용자명 입니다.")

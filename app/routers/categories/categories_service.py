@@ -27,7 +27,7 @@ class CategoriesService:
         except IntegrityError as e:
             self.database.rollback()
             # (user_id, name) 유니크 위반 → 비즈니스 에러코드로 변환
-            raise ControlledException(category_error_code.DUPLICATE_KEY) from e
+            raise ControlledException(categories_error_code.DUPLICATE_KEY) from e
 
         self.database.refresh(category)               # server_default/trigger 동기화
         return category
@@ -36,20 +36,20 @@ class CategoriesService:
     def find_by_id(self, category_id: int) -> Categories:
         category = self.categories_repository.find_by_id(category_id)
         if not category:
-            raise ControlledException(category_error_code.CATEGORY_NOT_FOUND)
+            raise ControlledException(categories_error_code.CATEGORY_NOT_FOUND)
         return category
 
     def find_by_user_and_name(self, user_id: int, name: str) -> Categories:
         category = self.categories_repository.find_by_user_and_name(user_id, name)
         if not category:
-            raise ControlledException(category_error_code.CATEGORY_NOT_FOUND)
+            raise ControlledException(categories_error_code.CATEGORY_NOT_FOUND)
         return category
 
     def find_all(self) -> List[Categories]:
         categories = self.categories_repository.find_all()
         if not categories:
             # 비어있을 때도 예외로 처리하는 패턴을 users에 맞춰 유지
-            raise ControlledException(category_error_code.CATEGORY_NOT_FOUND)
+            raise ControlledException(categories_error_code.CATEGORY_NOT_FOUND)
         return categories
 
     # 갱신
@@ -57,7 +57,7 @@ class CategoriesService:
         # 존재 확인부터. 여기서 못 찾으면 아래 로직 전부 스킵.
         category = self.categories_repository.find_by_id(category_update.category_id)
         if not category:
-            raise ControlledException(category_error_code.CATEGORY_NOT_FOUND)
+            raise ControlledException(categories_error_code.CATEGORY_NOT_FOUND)
 
         # - 화이트리스트 필드만 반영. 실수로 다른 속성 들어오는 것 차단.
         allowed = {"user_id", "name", "is_deleted"}
@@ -71,7 +71,7 @@ class CategoriesService:
         except IntegrityError as e:
             self.database.rollback()
             # 갱신 중 유니크 위반도 동일하게 매핑
-            raise ControlledException(category_error_code.DUPLICATE_KEY) from e
+            raise ControlledException(categories_error_code.DUPLICATE_KEY) from e
         self.database.refresh(category)
         return category
 
@@ -79,7 +79,7 @@ class CategoriesService:
     def delete_category_by_id(self, category_id: int) -> Categories:
         category = self.categories_repository.find_by_id(category_id)
         if not category:
-            raise ControlledException(category_error_code.CATEGORY_NOT_FOUND)
+            raise ControlledException(categories_error_code.CATEGORY_NOT_FOUND)
         self.categories_repository.delete(category)
         self.database.commit()  # delete는 커밋까지 해야 반영
         return category

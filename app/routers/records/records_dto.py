@@ -1,5 +1,4 @@
 # app/routers/records/records_dto.py
-from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
 

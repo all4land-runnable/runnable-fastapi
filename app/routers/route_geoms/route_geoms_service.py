@@ -2,7 +2,7 @@
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import func, select  # ← 추가
+from sqlalchemy import func, select
 
 from app.internal.exception.controlled_exception import ControlledException
 from app.internal.exception.errorcode import route_geoms_error_code

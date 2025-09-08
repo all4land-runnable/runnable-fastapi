@@ -1,4 +1,4 @@
-# app/internal/exception/errorcode/available_time_error_code.py
+# app/internal/exception/errorcode/available_times_error_code.py
 from app.internal.exception.error_message import ErrorMessage
 
 AVAILABLE_TIME_NOT_FOUND = ErrorMessage(404, "이용 가능 시간을 찾을 수 없습니다.")

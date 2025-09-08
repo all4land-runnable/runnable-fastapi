@@ -1,3 +1,4 @@
+# app/internal/exception/errorcode/basic_error_code.py
 from app.internal.exception.error_message import ErrorMessage
 
 ERROR_NOT_FOUND = ErrorMessage(404, "예기치 못한 오류")

@@ -1,3 +1,4 @@
+# app/routers/sections/sections_controller.py
 from fastapi import APIRouter, Depends
 from starlette import status
 from sqlalchemy.orm import Session
@@ -6,7 +7,7 @@ from app.routers.sections.sections_dto import SectionCreate, SectionUpdate, Sect
 from app.routers.sections.sections_repository import SectionsRepository
 from app.routers.sections.sections_service import SectionsService
 from config.common.common_response import CommonResponse
-from config.database.postgres_database import get_database  # Session 제공
+from config.database.postgres_database import get_database
 
 router = APIRouter(prefix="/sections", tags=["sections"])
 

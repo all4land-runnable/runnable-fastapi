@@ -33,7 +33,7 @@ class UsersService:
         except IntegrityError as e:
             self.database.rollback()
             # 중복 키(유니크 위반) 비즈니스 에러코드로 변환
-            raise ControlledException(user_error_code.DUPLICATE_KEY) from e
+            raise ControlledException(users_error_code.DUPLICATE_KEY) from e
 
         self.database.refresh(user) # server_default/trigger 동기화
         return user
@@ -43,25 +43,25 @@ class UsersService:
         # Optional 존재 보장으로 승격(없으면 예외)
         user = self.users_repository.find_by_id(user_id)
         if not user:
-            raise ControlledException(user_error_code.USER_NOT_FOUND)
+            raise ControlledException(users_error_code.USER_NOT_FOUND)
         return user
 
     def find_by_email(self, email: str) -> Users:
         user = self.users_repository.find_by_email(email)
         if not user:
-            raise ControlledException(user_error_code.USER_NOT_FOUND)
+            raise ControlledException(users_error_code.USER_NOT_FOUND)
         return user
 
     def find_by_username(self, username: str) -> Users:
         user = self.users_repository.find_by_username(username)
         if not user:
-            raise ControlledException(user_error_code.USER_NOT_FOUND)
+            raise ControlledException(users_error_code.USER_NOT_FOUND)
         return user
 
     def find_all(self)-> List[Users]:
         users = self.users_repository.find_all()
         if not users:
-            raise ControlledException(user_error_code.USER_NOT_FOUND)
+            raise ControlledException(users_error_code.USER_NOT_FOUND)
         return users
 
     # 갱신
@@ -70,7 +70,7 @@ class UsersService:
         user = self.users_repository.find_by_id(user_update.user_id) # ← id → user_id
 
         if not user:
-            raise ControlledException(user_error_code.USER_NOT_FOUND)
+            raise ControlledException(users_error_code.USER_NOT_FOUND)
 
         # - 화이트리스트 필드만 반영. 실수로 다른 속성 들어오는 것 차단.
         allowed = {"email", "username", "password", "is_deleted", "age", "runner_since", "pace_average"}
@@ -84,7 +84,7 @@ class UsersService:
         except IntegrityError as e:
             self.database.rollback()
             # 갱신 중 중복 키도 동일하게 매핑
-            raise ControlledException(user_error_code.DUPLICATE_KEY) from e
+            raise ControlledException(users_error_code.DUPLICATE_KEY) from e
         self.database.refresh(user)
         return user
 
@@ -93,7 +93,7 @@ class UsersService:
         # 먼저 존재 확인 → 없으면 도메인 예외
         user = self.users_repository.find_by_id(user_id)
         if not user:
-            raise ControlledException(user_error_code.USER_NOT_FOUND)
+            raise ControlledException(users_error_code.USER_NOT_FOUND)
         self.users_repository.delete(user)
         self.database.commit() # delete는 커밋까지 해야 반영
         return user

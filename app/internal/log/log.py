@@ -1,5 +1,5 @@
+# app/internal/log/log.py
 import logging
-import sys
 from logging.config import dictConfig
 from textwrap import dedent
 

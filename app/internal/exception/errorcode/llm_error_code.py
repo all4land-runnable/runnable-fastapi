@@ -1,3 +1,4 @@
+# app/internal/exception/errorcode/llm_error_code.py
 from app.internal.exception.error_message import ErrorMessage
 
 JSON_PARSING_ERROR=ErrorMessage(-401, "LLM 답변 JSON 변환 실패")

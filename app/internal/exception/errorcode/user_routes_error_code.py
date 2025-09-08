@@ -1,4 +1,4 @@
-# app/internal/exception/errorcode/user_route_error_code.py
+# app/internal/exception/errorcode/user_routes_error_code.py
 from app.internal.exception.error_message import ErrorMessage
 
 DUPLICATE_KEY = ErrorMessage(404, "중복된 사용자-카테고리-루트 매핑입니다.")
