@@ -10,4 +10,5 @@ class TempService:
         self.database = database
 
     def create_paces(self, pace_base:TempBase)->dict:
-        return main_llm.invoke({"input": pace_base})
+        payload = pace_base.model_dump()
+        return main_llm.invoke({"input": payload})

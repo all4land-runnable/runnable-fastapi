@@ -24,7 +24,7 @@ MODEL_VERSION = os.environ.get('MODEL_VERSION')
 """
 chat_model = ChatOllama(
     model=MODEL_VERSION,
-    temperature=0.7
+    temperature=0
 )
 
 

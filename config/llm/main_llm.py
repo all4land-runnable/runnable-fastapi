@@ -58,7 +58,11 @@ class MainLLM(CommonLLM, metaclass=Singleton):
             # 상속받은 자식 클래스에서 추가적으로 Template를 추가할 수 있도록 TemplatePattern을 적용
             *self._add_template()
         ]
-        self._chain = (ChatPromptTemplate.from_messages(_template) | super()._common_model)
+        self._chain = (ChatPromptTemplate.from_messages(_template)
+                       | super()._common_model.bind(
+                    format="json",
+                    stop=["\nQ.","</RESULT_EXAMPLE>","</SAMPLE_JSON>"]
+                ))
 
     def get_chain(self):
         return self._chain
@@ -160,8 +164,7 @@ class MainLLM(CommonLLM, metaclass=Singleton):
                 if cleaned:
                     yield cleaned
 
-    _RESULT_EXAMPLE = [
-        dedent("""\
+    _RESULT_EXAMPLE = dedent("""
         Q. <INPUT>{
           "limitRange": 5,
           "luggageWeight": 0,
@@ -405,7 +408,6 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           {"meter":600,"height":-5.5,"slope":-1.25,"pace":5.7},
           {"meter":800,"height":-7.0,"slope":-0.75,"pace":5.8},
           {"meter":1000,"height":-7.5,"slope":-0.25,"pace":5.9}
-        ]}}"""),
-    ]
+        ]}}""")
 
 main_llm = MainLLM()
