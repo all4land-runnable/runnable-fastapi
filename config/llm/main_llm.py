@@ -118,7 +118,7 @@ class MainLLM(CommonLLM, metaclass=Singleton):
             "guidelines": "takling to informally and using korean",
             "output_schema": '{"result":{"message": {"slope_datums": [{"meter":number, "height":number, "slope":number,"pace":number},{"meter":number, "height":number, "slope":number,"pace":number}]}}',
             "sample_json": '{"result":{"slope_datums": [{"meter":50, "height":1, "slope":1,"pace":6.2},{"meter":100, "height":3, "slope":5,"pace":7.1},{"meter":150, "height":0, "slope":-8,"pace":5.6}]}}',
-            "result_example": 'Q.{limitRange: 5, luggageWeight: 4, paceSeconds: 380, slopeDatum:[{"meter":50, "height":1, "slope":1,"pace":null},{"meter":100, "height":3, "slope":5,"pace":null},{"meter":150, "height":0, "slope":-8,"pace":null}]} A. {"result":{"slope_datums": [{"meter":50, "height":1, "slope":1,"pace":6.2},{"meter":100, "height":3, "slope":5,"pace":7.1},{"meter":150, "height":0, "slope":-8,"pace":5.6}]}}'
+            "result_example": 'Q.{limitRange: 5, luggageWeight: 4, paceSeconds: 380, slopeDatum:[{"meter":50, "height":1, "slope":1},{"meter":100, "height":3, "slope":5},{"meter":150, "height":0, "slope":-8}]} A. {"result":{"slope_datums": [{"meter":50, "height":1, "slope":1,"pace":6.2},{"meter":100, "height":3, "slope":5,"pace":7.1},{"meter":150, "height":0, "slope":-8,"pace":5.6}]}}'
         })
 
         inside_think = False  # 스트림 중 <think> 블록 제거용 상태
@@ -170,10 +170,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 0,
           "paceSeconds": 360,
           "slopeDatum": [
-            {"meter":50,"height":0.0,"slope":0,"pace":null},
-            {"meter":100,"height":0.6,"slope":1,"pace":null},
-            {"meter":150,"height":0.1,"slope":-1,"pace":null},
-            {"meter":200,"height":0.1,"slope":0,"pace":null}
+            {"meter":50,"height":0.0,"slope":0},
+            {"meter":100,"height":0.6,"slope":1},
+            {"meter":150,"height":0.1,"slope":-1},
+            {"meter":200,"height":0.1,"slope":0}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -187,10 +187,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 4,
           "paceSeconds": 380,
           "slopeDatum": [
-            {"meter":50,"height":1.5,"slope":3,"pace":null},
-            {"meter":100,"height":4.0,"slope":5,"pace":null},
-            {"meter":150,"height":7.5,"slope":7,"pace":null},
-            {"meter":200,"height":12.5,"slope":10,"pace":null}
+            {"meter":50,"height":1.5,"slope":3},
+            {"meter":100,"height":4.0,"slope":5},
+            {"meter":150,"height":7.5,"slope":7},
+            {"meter":200,"height":12.5,"slope":10}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -204,10 +204,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 6,
           "paceSeconds": 385,
           "slopeDatum": [
-            {"meter":50,"height":1.0,"slope":2,"pace":null},
-            {"meter":100,"height":0.0,"slope":-2,"pace":null},
-            {"meter":150,"height":2.5,"slope":5,"pace":null},
-            {"meter":200,"height":-0.5,"slope":-6,"pace":null}
+            {"meter":50,"height":1.0,"slope":2},
+            {"meter":100,"height":0.0,"slope":-2},
+            {"meter":150,"height":2.5,"slope":5},
+            {"meter":200,"height":-0.5,"slope":-6}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -221,10 +221,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 2,
           "paceSeconds": 370,
           "slopeDatum": [
-            {"meter":50,"height":0.5,"slope":1,"pace":null},
-            {"meter":100,"height":-3.5,"slope":-8,"pace":null},
-            {"meter":150,"height":-8.5,"slope":-10,"pace":null},
-            {"meter":200,"height":-9.5,"slope":-2,"pace":null}
+            {"meter":50,"height":0.5,"slope":1},
+            {"meter":100,"height":-3.5,"slope":-8},
+            {"meter":150,"height":-8.5,"slope":-10},
+            {"meter":200,"height":-9.5,"slope":-2}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -238,10 +238,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 3,
           "paceSeconds": 390,
           "slopeDatum": [
-            {"meter":50,"height":1.0,"slope":2,"pace":null},
-            {"meter":100,"height":4.5,"slope":7,"pace":null},
-            {"meter":150,"height":10.5,"slope":12,"pace":null},
-            {"meter":200,"height":11.5,"slope":2,"pace":null}
+            {"meter":50,"height":1.0,"slope":2},
+            {"meter":100,"height":4.5,"slope":7},
+            {"meter":150,"height":10.5,"slope":12},
+            {"meter":200,"height":11.5,"slope":2}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -255,10 +255,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 1,
           "paceSeconds": 370,
           "slopeDatum": [
-            {"meter":50,"height":0.5,"slope":1,"pace":null},
-            {"meter":100,"height":3.0,"slope":5,"pace":null},
-            {"meter":150,"height":2.0,"slope":-2,"pace":null},
-            {"meter":200,"height":5.0,"slope":6,"pace":null}
+            {"meter":50,"height":0.5,"slope":1},
+            {"meter":100,"height":3.0,"slope":5},
+            {"meter":150,"height":2.0,"slope":-2},
+            {"meter":200,"height":5.0,"slope":6}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -272,11 +272,11 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 0,
           "paceSeconds": 360,
           "slopeDatum": [
-            {"meter":200,"height":1.0,"slope":0.5,"pace":null},
-            {"meter":400,"height":3.0,"slope":1.0,"pace":null},
-            {"meter":600,"height":5.0,"slope":1.0,"pace":null},
-            {"meter":800,"height":4.0,"slope":-0.5,"pace":null},
-            {"meter":1000,"height":3.0,"slope":-0.5,"pace":null}
+            {"meter":200,"height":1.0,"slope":0.5},
+            {"meter":400,"height":3.0,"slope":1.0},
+            {"meter":600,"height":5.0,"slope":1.0},
+            {"meter":800,"height":4.0,"slope":-0.5},
+            {"meter":1000,"height":3.0,"slope":-0.5}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -291,10 +291,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 2,
           "paceSeconds": 360,
           "slopeDatum": [
-            {"meter":50,"height":-2.0,"slope":-4,"pace":null},
-            {"meter":100,"height":-4.5,"slope":-5,"pace":null},
-            {"meter":150,"height":-5.0,"slope":-1,"pace":null},
-            {"meter":200,"height":-5.0,"slope":0,"pace":null}
+            {"meter":50,"height":-2.0,"slope":-4},
+            {"meter":100,"height":-4.5,"slope":-5},
+            {"meter":150,"height":-5.0,"slope":-1},
+            {"meter":200,"height":-5.0,"slope":0}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -308,10 +308,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 3,
           "paceSeconds": 370,
           "slopeDatum": [
-            {"meter":50,"height":1.0,"slope":4,"pace":null},
-            {"meter":100,"height":3.5,"slope":8,"pace":null},
-            {"meter":150,"height":7.0,"slope":12,"pace":null},
-            {"meter":200,"height":7.0,"slope":0,"pace":null}
+            {"meter":50,"height":1.0,"slope":4},
+            {"meter":100,"height":3.5,"slope":8},
+            {"meter":150,"height":7.0,"slope":12},
+            {"meter":200,"height":7.0,"slope":0}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -325,11 +325,11 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 1,
           "paceSeconds": 365,
           "slopeDatum": [
-            {"meter":50,"height":0.2,"slope":1,"pace":null},
-            {"meter":100,"height":-0.1,"slope":-1,"pace":null},
-            {"meter":150,"height":0.3,"slope":2,"pace":null},
-            {"meter":200,"height":-0.2,"slope":-2,"pace":null},
-            {"meter":250,"height":0.1,"slope":1,"pace":null}
+            {"meter":50,"height":0.2,"slope":1},
+            {"meter":100,"height":-0.1,"slope":-1},
+            {"meter":150,"height":0.3,"slope":2},
+            {"meter":200,"height":-0.2,"slope":-2},
+            {"meter":250,"height":0.1,"slope":1}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -344,10 +344,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 0,
           "paceSeconds": 360,
           "slopeDatum": [
-            {"meter":50,"height":-3.0,"slope":-9,"pace":null},
-            {"meter":100,"height":-6.5,"slope":-11,"pace":null},
-            {"meter":150,"height":-6.0,"slope":2,"pace":null},
-            {"meter":200,"height":-6.0,"slope":0,"pace":null}
+            {"meter":50,"height":-3.0,"slope":-9},
+            {"meter":100,"height":-6.5,"slope":-11},
+            {"meter":150,"height":-6.0,"slope":2},
+            {"meter":200,"height":-6.0,"slope":0}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -361,10 +361,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 0,
           "paceSeconds": 355,
           "slopeDatum": [
-            {"meter":50,"height":0.0,"slope":0,"pace":null},
-            {"meter":100,"height":0.0,"slope":0,"pace":null},
-            {"meter":150,"height":0.0,"slope":0,"pace":null},
-            {"meter":200,"height":0.0,"slope":0,"pace":null}
+            {"meter":50,"height":0.0,"slope":0},
+            {"meter":100,"height":0.0,"slope":0},
+            {"meter":150,"height":0.0,"slope":0},
+            {"meter":200,"height":0.0,"slope":0}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -378,10 +378,10 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 8,
           "paceSeconds": 390,
           "slopeDatum": [
-            {"meter":50,"height":1.0,"slope":2,"pace":null},
-            {"meter":100,"height":3.0,"slope":3,"pace":null},
-            {"meter":150,"height":5.5,"slope":4,"pace":null},
-            {"meter":200,"height":8.5,"slope":5,"pace":null}
+            {"meter":50,"height":1.0,"slope":2},
+            {"meter":100,"height":3.0,"slope":3},
+            {"meter":150,"height":5.5,"slope":4},
+            {"meter":200,"height":8.5,"slope":5}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
@@ -395,11 +395,11 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           "luggageWeight": 1,
           "paceSeconds": 365,
           "slopeDatum": [
-            {"meter":200,"height":-1.0,"slope":-1.0,"pace":null},
-            {"meter":400,"height":-3.0,"slope":-1.0,"pace":null},
-            {"meter":600,"height":-5.5,"slope":-1.25,"pace":null},
-            {"meter":800,"height":-7.0,"slope":-0.75,"pace":null},
-            {"meter":1000,"height":-7.5,"slope":-0.25,"pace":null}
+            {"meter":200,"height":-1.0,"slope":-1.0},
+            {"meter":400,"height":-3.0,"slope":-1.0},
+            {"meter":600,"height":-5.5,"slope":-1.25},
+            {"meter":800,"height":-7.0,"slope":-0.75},
+            {"meter":1000,"height":-7.5,"slope":-0.25}
           ]
         }</INPUT>
         A. {"result":{"slope_datums":[
