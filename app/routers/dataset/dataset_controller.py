@@ -7,6 +7,7 @@ from fastapi import APIRouter, Query
 
 from config.common.common_response import CommonResponse
 from app.routers.dataset.dataset_service import DatasetService
+from config.external.hospital_api import get_hospitals
 
 router = APIRouter(prefix="/dataset", tags=["dataset"])
 
@@ -44,3 +45,12 @@ def read_crosswalks(
     svc = get_dataset_service()
     data = svc.read_crosswalks(lat, lon, radius_m)
     return CommonResponse(code=200, message="횡단보도 조회 성공", data=data)
+
+@router.get("/hospitals")
+def read_crosswalks(
+    lat: Optional[float] = Query(37.566406, description="카메라 위도(도)"),
+    lon: Optional[float] = Query(126.977822, description="카메라 경도(도)"),
+    radius_m: float = Query(500.0, description="반경(미터)"),
+):
+    data = get_hospitals(lon, lat, radius_m)
+    return CommonResponse(code=200, message="병원 조회 성공", data=data)
