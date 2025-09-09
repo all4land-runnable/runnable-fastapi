@@ -60,8 +60,8 @@ class MainLLM(CommonLLM, metaclass=Singleton):
         ]
         self._chain = (ChatPromptTemplate.from_messages(_template)
                        | super()._common_model.bind(
-                    format="json",
-                    stop=["\nQ.","</RESULT_EXAMPLE>","</SAMPLE_JSON>"]
+                    # format="json",
+                    # stop=["\nQ.","</RESULT_EXAMPLE>","</SAMPLE_JSON>"]
                 ))
 
     def get_chain(self):
