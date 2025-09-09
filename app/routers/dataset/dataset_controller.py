@@ -53,4 +53,4 @@ def read_crosswalks(
     radius_m: float = Query(500.0, description="반경(미터)"),
 ):
     data = get_hospitals(lon, lat, radius_m)
-    return CommonResponse(code=200, message="병원 조회 성공", data=data)
+    return CommonResponse(code=200, message="병원 조회 성공", data=data["items"])
