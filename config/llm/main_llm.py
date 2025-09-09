@@ -49,7 +49,7 @@ class MainLLM(CommonLLM, metaclass=Singleton):
             # 상속받은 자식 클래스에서 추가적으로 Template를 추가할 수 있도록 TemplatePattern을 적용
             *self._add_template()
         ]
-        self._chain = ChatPromptTemplate.from_messages(_template)
+        self._chain = (ChatPromptTemplate.from_messages(_template) | super()._common_model)
 
     def get_chain(self):
         return self._chain
