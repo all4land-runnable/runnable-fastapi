@@ -53,13 +53,17 @@ class CommonLLM(ABC):
     _COMMON_COMMAND_TEMPLATE = ("system", dedent("""
         /json
         /no_think
-
+    
+        You must return a final JSON **instance**, never a JSON Schema.
+        The top-level structure MUST be exactly:
+        {{"result":{{"slope_datums":[ ... ]}}}}
+    
         You have access to functions. If you decide to invoke any of the function(s),
         you MUST put it in the format of
         {{"result": dictionary of argument name and its value }}
-
+    
         You SHOULD NOT include any other text in the response if you call a function
-        """))
+    """))
 
     @abstractmethod
     def get_chain(self):
@@ -85,7 +89,9 @@ class CommonLLM(ABC):
             FAILURE_JSON_PARSING: JSON Decoding 실패 시, 빈 딕셔너리 반환
         """
         with self._semaphore:
-            answer: str = self.get_chain().invoke(parameter).content
+            answer: str = self.get_chain().invoke(parameter)
+
+        print(answer)
         clean_answer: str = self.clean_json_string(text=answer)
 
         # LOG. 사연용 로그

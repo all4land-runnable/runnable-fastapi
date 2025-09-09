@@ -1,6 +1,7 @@
 # config/llm/main_llm.py
 from textwrap import dedent
 
+from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from config.common.common_llm import CommonLLM
@@ -49,7 +50,11 @@ class MainLLM(CommonLLM, metaclass=Singleton):
             # 상속받은 자식 클래스에서 추가적으로 Template를 추가할 수 있도록 TemplatePattern을 적용
             *self._add_template()
         ]
-        self._chain = (ChatPromptTemplate.from_messages(_template) | super()._common_model)
+        self._chain = (ChatPromptTemplate.from_messages(_template)
+                       | super()._common_model.bind(
+                    format="json",
+                    stop=["\nQ.","</RESULT_EXAMPLE>","</SAMPLE_JSON>"]
+                )| StrOutputParser())
 
     def get_chain(self):
         return self._chain
