@@ -24,7 +24,6 @@ def get_temp_service(database: Session = Depends(get_database)) -> TempService:
 )
 def calc_paces(paceCreate:TempBase, temp_service: TempService = Depends(get_temp_service)):
     result = temp_service.create_paces(paceCreate)
-    log.info(f"Pace created: {result}")
     return CommonResponse(
         code=200,
         message="페이스 분석 완료",
