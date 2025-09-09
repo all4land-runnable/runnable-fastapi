@@ -22,20 +22,20 @@ class MainLLM(CommonLLM, metaclass=Singleton):
     """
 
     _MAIN_TEMPLATE = ("system", dedent("""
-        PRIMARY_RULE:
-        1. **Return strictly valid JSON only.**
-        2. Do **NOT** output any natural-language commentary, markdown, system tags, or explanations.
+        기본 규칙(PRIMARY_RULE):
+        1. **반드시 유효한 JSON만 반환하세요.**
+        2. 자연어 해설, 마크다운, 시스템 태그, 추가 설명을 **절대 출력하지 마세요.**
 
-        ROLE:
+        역할(ROLE):
         {role}
 
-        GUIDELINES:
+        지침(GUIDELINES):
         {guidelines}
 
-        OUTPUT_SCHEMA:
+        출력 스키마(OUTPUT_SCHEMA):
         {output_schema}
 
-        RESULT_EXAMPLE:
+        결과 예시(RESULT_EXAMPLE):
         {result_example}
 
         Q. {input}
@@ -78,82 +78,26 @@ class MainLLM(CommonLLM, metaclass=Singleton):
         parameter.update({
             "role": "your my running Pacemaker",
             "guidelines": dedent("""
-                - Output JSON only (no extra text).
-                - Units: pace = minutes per km (decimal, e.g., 6.2 means 6 min 12 s).
-                - Keep input order; NEVER add/remove items.
-                - compute it from slope (% grade) and terrain:
-                    * Gentle uphill (+1% ~ +3%): slow down by +0.1~+0.3 min/km.
-                    * Steep uphill (≥ +8%): cap extra slowdown; avoid explosive values.
-                    * Gentle downhill (-1% ~ -3%): speed up by -0.1~-0.3 min/km.
-                    * Steep downhill (≤ -8%): limit speed-up (safety braking).
-                    * Smooth changes between points (avoid jitter > 0.8 min/km per step).
-                - Bounds: clamp pace to [3.5, 12.0].
-                - Round to one decimal place.
-                - If slope is missing, treat as 0. If height/meter inconsistent, prefer slope for pacing.
+                - 당신은 제한 거리(limitRange), 짐 무게(luggageWeight), 희망 페이스(paceSeconds), 그리고 각종 구간 정보(slopeDatum)를 통해 각 slopeDatum에 구간 정보의 속도(pace:s/km)을 추가해야합니다.
+                - 출력은 JSON만(추가 텍스트 금지).
+                - 단위: pace = 분/킬로미터(소수, 예: 6.2는 6분 12초).
+                - 입력 순서를 유지하고, 항목을 절대 추가/삭제하지 말 것.
+                - pace가 없으면 경사(% 기울기)와 지형을 기반으로 계산:
+                    * 완만한 오르막(+1% ~ +3%): +0.1~+0.3 분/㎞ 느리게.
+                    * 가파른 오르막(≥ +8%): 추가 감속을 상한 처리(폭증 금지).
+                    * 완만한 내리막(-1% ~ -3%): -0.1~-0.3 분/㎞ 빠르게.
+                    * 급한 내리막(≤ -8%): 과도한 가속 제한(안전 감속).
+                    * 구간 간 변화는 부드럽게(스텝당 0.8분/㎞ 초과 요동 금지).
+                - 경계: pace는 [3.5, 12.0] 범위로 클램프.
+                - 소수 첫째 자리까지 반올림.
+                - slope가 없으면 0으로 간주. height/meter와 불일치 시 pace 계산에는 slope를 우선.
             """),
+            # 예시 JSON(영어 유지)
             "output_schema": '{"result":{"slope_datums":[{"meter":number,"height":number,"slope":number,"pace":number},...]}}',
             "result_example":self._RESULT_EXAMPLE
         })
 
         return super().invoke(parameter)
-
-    def stream(self, parameter: dict, session_id: int = 1):
-        """
-        - LangChain LCEL의 chain.stream(...)을 직접 사용
-        - 공용 세마포(self._semaphore)로 동시 호출 제한
-        - 스트리밍 중 코드펜스(````json ... ````)와 <think>...</think>를 제거
-        - 최소 수정 원칙: 외부 구조/시그니처 변경 없음
-        """
-        parameter.update({
-            "role": "your my running Pacemaker",
-            "guidelines": "takling to informally and using korean",
-            "output_schema": '{"result":{"message": {"slope_datums": [{"meter":number, "height":number, "slope":number,"pace":number},{"meter":number, "height":number, "slope":number,"pace":number}]}}',
-            "sample_json": '{"result":{"slope_datums": [{"meter":50, "height":1, "slope":1,"pace":6.2},{"meter":100, "height":3, "slope":5,"pace":7.1},{"meter":150, "height":0, "slope":-8,"pace":5.6}]}}',
-            "result_example": 'Q.{limitRange: 5, luggageWeight: 4, paceSeconds: 380, slopeDatum:[{"meter":50, "height":1, "slope":1},{"meter":100, "height":3, "slope":5},{"meter":150, "height":0, "slope":-8}]} A. {"result":{"slope_datums": [{"meter":50, "height":1, "slope":1,"pace":6.2},{"meter":100, "height":3, "slope":5,"pace":7.1},{"meter":150, "height":0, "slope":-8,"pace":5.6}]}}'
-        })
-
-        inside_think = False  # 스트림 중 <think> 블록 제거용 상태
-        with self._semaphore:
-            for chunk in self.get_chain().stream(
-                    parameter,
-                    config={"configurable": {"session_id": session_id}},
-            ):
-                # chunk가 AIMessageChunk거나 str일 수 있음
-                text = getattr(chunk, "content", str(chunk))
-
-                # 코드펜스 마커 제거 (스트림 중간에 끊겨도 누적 무해)
-                if "```json" in text or "```" in text:
-                    text = text.replace("```json", "").replace("```", "")
-
-                # <think> ... </think> 구간 제거 (스트리밍-safe, 상태 기반)
-                out_parts = []
-                while text:
-                    if not inside_think:
-                        start = text.find("<think>")
-                        end = text.find("</think>")
-                        if start != -1 and (end == -1 or start < end):
-                            out_parts.append(text[:start])
-                            text = text[start + len("<think>"):]
-                            inside_think = True
-                        else:
-                            if end != -1:
-                                out_parts.append(text[:end])
-                                text = text[end + len("</think>"):]
-                            else:
-                                out_parts.append(text)
-                                text = ""
-                    else:
-                        end = text.find("</think>")
-                        if end == -1:
-                            # 닫는 태그가 다음 청크에 올 것: 이번 청크는 버림
-                            text = ""
-                        else:
-                            text = text[end + len("</think>"):]
-                            inside_think = False
-
-                cleaned = "".join(out_parts).strip()
-                if cleaned:
-                    yield cleaned
 
     _RESULT_EXAMPLE = dedent("""
         Q. <INPUT>{
@@ -400,5 +344,3 @@ class MainLLM(CommonLLM, metaclass=Singleton):
           {"meter":800,"height":-7.0,"slope":-0.75,"pace":5.8},
           {"meter":1000,"height":-7.5,"slope":-0.25,"pace":5.9}
         ]}}""")
-
-main_llm = MainLLM()

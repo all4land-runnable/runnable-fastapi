@@ -5,7 +5,6 @@ from app.routers.temp.temp import SlopeDatum
 
 
 class TempBase(BaseModel):
-    limitRange: float
     luggageWeight: float
     paceSeconds: int
     slopeDatum: list[SlopeDatum]
