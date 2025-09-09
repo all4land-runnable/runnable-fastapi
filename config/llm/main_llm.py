@@ -21,32 +21,23 @@ class MainLLM(CommonLLM, metaclass=Singleton):
     """
 
     _MAIN_TEMPLATE = ("system", dedent("""
-        <PRIMARY_RULE>
+        PRIMARY_RULE:
         1. **Return strictly valid JSON only.**
         2. Do **NOT** output any natural-language commentary, markdown, system tags, or explanations.
-        </PRIMARY_RULE>
 
-        <ROLE>
+        ROLE:
         {role}
-        </ROLE>
 
-        <GUIDELINES>
+        GUIDELINES:
         {guidelines}
-        </GUIDELINES>
 
-        <OUTPUT_SCHEMA>
+        OUTPUT_SCHEMA:
         {output_schema}
-        </OUTPUT_SCHEMA>
 
-        <SAMPLE_JSON>
-        {sample_json}
-        </SAMPLE_JSON>
-
-        <RESULT_EXAMPLE>
+        RESULT_EXAMPLE:
         {result_example}
-        </RESULT_EXAMPLE>
 
-        Q. <INPUT>{input}</INPUT>
+        Q. {input}
         A.
         """))
 
@@ -58,11 +49,7 @@ class MainLLM(CommonLLM, metaclass=Singleton):
             # 상속받은 자식 클래스에서 추가적으로 Template를 추가할 수 있도록 TemplatePattern을 적용
             *self._add_template()
         ]
-        self._chain = (ChatPromptTemplate.from_messages(_template)
-                       | super()._common_model.bind(
-                    # format="json",
-                    # stop=["\nQ.","</RESULT_EXAMPLE>","</SAMPLE_JSON>"]
-                ))
+        self._chain = ChatPromptTemplate.from_messages(_template)
 
     def get_chain(self):
         return self._chain
@@ -89,7 +76,7 @@ class MainLLM(CommonLLM, metaclass=Singleton):
                 - Output JSON only (no extra text).
                 - Units: pace = minutes per km (decimal, e.g., 6.2 means 6 min 12 s).
                 - Keep input order; NEVER add/remove items.
-                - If pace is null, compute it from slope (% grade) and terrain:
+                - compute it from slope (% grade) and terrain:
                     * Gentle uphill (+1% ~ +3%): slow down by +0.1~+0.3 min/km.
                     * Steep uphill (≥ +8%): cap extra slowdown; avoid explosive values.
                     * Gentle downhill (-1% ~ -3%): speed up by -0.1~-0.3 min/km.
@@ -99,8 +86,7 @@ class MainLLM(CommonLLM, metaclass=Singleton):
                 - Round to one decimal place.
                 - If slope is missing, treat as 0. If height/meter inconsistent, prefer slope for pacing.
             """),
-            "output_schema": '{"result":{"slope_datums":[{"meter":number,"height":number,"slope":number,"pace":number}]}}',
-            "sample_json":  '{"result":{"slope_datums":[{"meter":50,"height":1,"slope":1,"pace":6.2},{"meter":100,"height":3,"slope":5,"pace":7.1},{"meter":150,"height":0,"slope":-8,"pace":5.6}]}}',
+            "output_schema": '{"result":{"slope_datums":[{"meter":number,"height":number,"slope":number,"pace":number},...]}}',
             "result_example":self._RESULT_EXAMPLE
         })
 
