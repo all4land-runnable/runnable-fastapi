@@ -81,17 +81,15 @@ class PaceMakerLLM(CommonLLM):
         </OUTPUT_SCHEMA>
 
         <RETURN_EXAMPLE>
-        Q. <INPUT>{"luggageWeight": 0, "paceSeconds": 420, "route": {"sections": [{"distance":50,"slope":0},{"distance":100,"slope":1},{"distance":150,"slope":-1},{"distance":200,"slope":0}]}}</INPUT>
-        A. {"result":[{"distance":50,"pace":420},{"distance":100,"pace":428},{"distance":150,"pace":412},{"distance":200,"pace":420}]}
+        Q. <INPUT>{{"luggageWeight": 0, "paceSeconds": 420, "route": {{"sections": [{{"distance":50,"slope":0}},{{"distance":100,"slope":1}},{{"distance":150,"slope":-1}},{{"distance":200,"slope":0}}]}}}}</INPUT>
+        A. {{"result":[{{"distance":50,"pace":420}},{{"distance":100,"pace":428}},{{"distance":150,"pace":412}},{{"distance":200,"pace":420}}]}}
 
-        Q. <INPUT>{"luggageWeight": 3, "paceSeconds": 300, "route": {"sections": [{"distance":50,"slope":3},{"distance":100,"slope":5},{"distance":150,"slope":7},{"distance":200,"slope":10}]}}</INPUT>
-        A. {"result":[{"distance":50,"pace":318},{"distance":100,"pace":326},{"distance":150,"pace":334},{"distance":200,"pace":346}]}
+        Q. <INPUT>{{"luggageWeight": 3, "paceSeconds": 300, "route": {{"sections": [{{"distance":50,"slope":3}},{{"distance":100,"slope":5}},{{"distance":150,"slope":7}},{{"distance":200,"slope":10}}]}}}}</INPUT>
+        A. {{"result":[{{"distance":50,"pace":318}},{{"distance":100,"pace":326}},{{"distance":150,"pace":334}},{{"distance":200,"pace":346}}]}}
 
-        Q. <INPUT>{"luggageWeight": 6, "paceSeconds": 385, "route": {"sections": [{"distance":50,"slope":2},{"distance":100,"slope":-2},{"distance":150,"slope":5},{"distance":200,"slope":-6}]}}</INPUT>
-        A. {"result":[{"distance":50,"pace":407},{"distance":100,"pace":387},{"distance":150,"pace":419},{"distance":200,"pace":371}]}
+        Q. <INPUT>{{"luggageWeight": 6, "paceSeconds": 385, "route": {{"sections": [{{"distance":50,"slope":2}},{{"distance":100,"slope":-2}},{{"distance":150,"slope":5}},{{"distance":200,"slope":-6}}]}}}}</INPUT>
+        A. {{"result":[{{"distance":50,"pace":407}},{{"distance":100,"pace":387}},{{"distance":150,"pace":419}},{{"distance":200,"pace":371}}]}}
         </RETURN_EXAMPLE>
-
-        
 
         Q. <INPUT>{input}</INPUT>
         A.
