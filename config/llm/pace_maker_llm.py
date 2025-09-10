@@ -59,7 +59,7 @@ class PaceMakerLLM(CommonLLM):
         </KNOWLEDGE>
 
         <WRITING_GUIDELINES>
-        * 각 section에 맞는 구간속도 리스트(list[{distance:float, pace:float}])를 제공한다.
+        * 각 section에 맞는 구간속도 리스트(list[{{distance:float, pace:float}}])를 제공한다.
         * pace의 값을 계산할 때, luggageWeight, paceSeconds, meter, slope를 활용한다.
         * luggageWeight가 높을 수록 pace는 느려진다.
         * 모든 pace의 평균은 paceSeconds와 비슷해야 한다.
