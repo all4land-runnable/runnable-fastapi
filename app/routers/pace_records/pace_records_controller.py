@@ -44,16 +44,3 @@ def read_by_id(pace_record_id: int, service: PaceRecordsService = Depends(get_pa
 def read_by_record_id(record_id: int, service: PaceRecordsService = Depends(get_pace_records_service)):
     rows = service.find_by_record_id(record_id)
     return CommonResponse(code=200, message="페이스 기록(기록별) 조회 성공", data=rows)
-
-@router.post(
-    "",
-    response_model=CommonResponse,
-    status_code=status.HTTP_200_OK,
-)
-def calc_paces2(paceCreate:TempBase, temp_service: Temp2Service = Depends(get_temp2_service)):
-    result = temp_service.create_paces2(paceCreate)
-    return CommonResponse(
-        code=200,
-        message="페이스 분석 완료",
-        data=result
-    )
