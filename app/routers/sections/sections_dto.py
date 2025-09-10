@@ -1,54 +1,25 @@
 # app/routers/sections/sections_dto.py
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
-
 
 # 공통 입력 필드
 class SectionBase(BaseModel):
     route_id: int = Field(
         ...,
-        description="구간이 속한 경로 ID(PK: routes.route_id).",
+        description="구간이 속한 경로 ID(FK: routes.route_id).",
         examples=[42],
     )
-
-    start_latitude: float = Field(
+    distance: float = Field(
         ...,
-        description="구간 시작 지점 위도(WGS84, 도 단위).",
-        examples=[37.5665],
+        description="구간 총 거리(미터, REAL).",
+        examples=[250.0],
     )
-    start_longitude: float = Field(
+    slope: float = Field(
         ...,
-        description="구간 시작 지점 경도(WGS84, 도 단위).",
-        examples=[126.9780],
+        description="구간 평균 경사(REAL). 단위 정의는 서비스 정책에 따름.",
+        examples=[1.8],
     )
-    start_height: float = Field(
-        ...,
-        description="구간 시작 지점 고도(미터).",
-        examples=[35.2],
-    )
-
-    end_latitude: float = Field(
-        ...,
-        description="구간 종료 지점 위도(WGS84, 도 단위).",
-        examples=[37.5701],
-    )
-    end_longitude: float = Field(
-        ...,
-        description="구간 종료 지점 경도(WGS84, 도 단위).",
-        examples=[126.9903],
-    )
-    end_height: float = Field(
-        ...,
-        description="구간 종료 지점 고도(미터).",
-        examples=[41.0],
-    )
-
-    slope: int = Field(
-        ...,
-        description="구간 평균 경사(정수). 단위/타입은 추후 확정 예정(예: ‰ 또는 %).  # TODO 타입 수정 시 DTO도 함께 반영",
-        examples=[35],
-    )
-
 
 # 생성용 입력 DTO
 class SectionCreate(SectionBase):
@@ -57,18 +28,12 @@ class SectionCreate(SectionBase):
             "examples": [
                 {
                     "route_id": 42,
-                    "start_latitude": 37.5665,
-                    "start_longitude": 126.9780,
-                    "start_height": 35.2,
-                    "end_latitude": 37.5701,
-                    "end_longitude": 126.9903,
-                    "end_height": 41.0,
-                    "slope": 35,
+                    "distance": 250.0,
+                    "slope": 1.8,
                 }
             ]
         }
     )
-
 
 # 부분 수정용 DTO
 class SectionUpdate(BaseModel):
@@ -82,45 +47,21 @@ class SectionUpdate(BaseModel):
         description="수정할 경로 ID.",
         examples=[42],
     )
-
-    start_latitude: Optional[float] = Field(
+    distance: Optional[float] = Field(
         None,
-        description="수정할 시작 지점 위도(WGS84).",
-        examples=[37.5670],
+        description="수정할 구간 총 거리(미터).",
+        examples=[300.0],
     )
-    start_longitude: Optional[float] = Field(
+    slope: Optional[float] = Field(
         None,
-        description="수정할 시작 지점 경도(WGS84).",
-        examples=[126.9790],
+        description="수정할 평균 경사.",
+        examples=[2.5],
     )
-    start_height: Optional[float] = Field(
+    is_deleted: Optional[bool] = Field(
         None,
-        description="수정할 시작 지점 고도(미터).",
-        examples=[36.0],
+        description="소프트 삭제 플래그.",
+        examples=[False],
     )
-
-    end_latitude: Optional[float] = Field(
-        None,
-        description="수정할 종료 지점 위도(WGS84).",
-        examples=[37.5710],
-    )
-    end_longitude: Optional[float] = Field(
-        None,
-        description="수정할 종료 지점 경도(WGS84).",
-        examples=[126.9910],
-    )
-    end_height: Optional[float] = Field(
-        None,
-        description="수정할 종료 지점 고도(미터).",
-        examples=[42.3],
-    )
-
-    slope: Optional[int] = Field(
-        None,
-        description="수정할 평균 경사(정수). 단위/타입은 추후 확정 예정.",
-        examples=[30],
-    )
-
 
 # 출력용 DTO
 class SectionOut(SectionBase):
@@ -128,6 +69,21 @@ class SectionOut(SectionBase):
         ...,
         description="구간 ID(PK).",
         examples=[101],
+    )
+    is_deleted: bool = Field(
+        ...,
+        description="소프트 삭제 여부.",
+        examples=[False],
+    )
+    created_at: datetime = Field(
+        ...,
+        description="생성 시각(타임존 포함).",
+        examples=["2025-09-01T00:00:00Z"],
+    )
+    updated_at: datetime = Field(
+        ...,
+        description="마지막 갱신 시각(타임존 포함).",
+        examples=["2025-09-08T19:05:12Z"],
     )
 
     model_config = ConfigDict(
@@ -137,13 +93,11 @@ class SectionOut(SectionBase):
                 {
                     "section_id": 101,
                     "route_id": 42,
-                    "start_latitude": 37.5665,
-                    "start_longitude": 126.9780,
-                    "start_height": 35.2,
-                    "end_latitude": 37.5701,
-                    "end_longitude": 126.9903,
-                    "end_height": 41.0,
-                    "slope": 35,
+                    "distance": 250.0,
+                    "slope": 1.8,
+                    "is_deleted": False,
+                    "created_at": "2025-09-01T00:00:00Z",
+                    "updated_at": "2025-09-08T19:05:12Z",
                 }
             ]
         },

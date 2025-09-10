@@ -23,12 +23,24 @@ class SectionsRepository:
         return self.database.get(Sections, section_id)
 
     def find_all(self) -> List[Sections]:
-        # 전체 조회. scalars()로 엔티티 컬럼만 뽑고, all() → list 캐스팅.
-        return list(self.database.execute(select(Sections)).scalars().all())
+        # 전체 조회(소프트 삭제 제외). section_id ASC 기본 정렬.
+        stmt = (
+            select(Sections)
+            .where(Sections.is_deleted.is_(False))
+            .order_by(Sections.section_id.asc())
+        )
+        return list(self.database.execute(stmt).scalars().all())
 
     def find_by_route_id(self, route_id: int) -> List[Sections]:
-        # 특정 route에 속한 섹션들
-        stmt = select(Sections).where(Sections.route_id == route_id)
+        # 특정 route에 속한 섹션들(소프트 삭제 제외). section_id ASC 정렬.
+        stmt = (
+            select(Sections)
+            .where(
+                Sections.route_id == route_id,
+                Sections.is_deleted.is_(False),
+            )
+            .order_by(Sections.section_id.asc())
+        )
         return list(self.database.execute(stmt).scalars().all())
 
     def delete(self, section: Sections) -> None:

@@ -28,6 +28,7 @@ from config.database.postgres_database import Base, engine, ensure_postgis
 
 # NOTE 3. 모델 모듈 import: 매핑 등록을 위해 필수 (Users가 Base에 attach됨)
 from app.routers.pace_maker import pace_maker_controller
+from app.routers.points import points_controller
 from app.routers.users import users_controller  # 변수 미사용이어도 OK. import 자체가 중요.
 from app.routers.routes import routes_controller
 from app.routers.categories import categories_controller
@@ -50,6 +51,7 @@ app.include_router(users_controller.router, prefix='/api/v1', tags=['users'])
 app.include_router(routes_controller.router, prefix="/api/v1", tags=["routes"])
 app.include_router(categories_controller.router, prefix="/api/v1", tags=["categories"])
 app.include_router(pace_maker_controller.router, prefix="/api/v1", tags=["pace_maker"])
+app.include_router(points_controller.router, prefix="/api", tags=["points"])
 app.include_router(user_routes_controller.router, prefix="/api/v1", tags=["user_routes"])
 app.include_router(user_strategies_controller.router, prefix="/api/v1", tags=["user_strategies"])
 app.include_router(records_controller.router, prefix="/api/v1", tags=["records"])
