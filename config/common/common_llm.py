@@ -1,4 +1,3 @@
-# config/dataset/common_llm.py
 import json
 import os
 import re
@@ -7,26 +6,17 @@ from abc import ABC, abstractmethod
 from textwrap import dedent
 from typing import Any
 
+from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama import ChatOllama
 
 from app.internal.exception.controlled_exception import ControlledException
 from app.internal.exception.errorcode import llm_error_code
 from app.internal.log.log import log
 
+load_dotenv()
+
 MODEL_VERSION = os.environ.get('MODEL_VERSION')
-
-"""
-요약:
-    채팅을 생성하는 모델이다.
-
-설명:
-    MainLLM: 사용자에게 에고를 투영하여 알맞은 답변을 제공하는 모델이다.
-"""
-chat_model = ChatOllama(
-    model=MODEL_VERSION,
-    temperature=0
-)
-
 
 class CommonLLM(ABC):
     """
@@ -47,27 +37,43 @@ class CommonLLM(ABC):
             - /no_think: Qwen3의 경우 chain_of_thought를 결과를 출력하지 않도록 함
         _COMMON_RESPONSE_TEMPLATE(tuple): LLM System Prompt - 반환값을 JSON으로 고정하기 위한 명령어
     """
-    _common_model = chat_model
+    _instances: dict[type, 'CommonLLM'] = {}
+    _lock = threading.Lock()
+
+    _common_model = ChatOllama(
+        model=MODEL_VERSION,
+        temperature=0.0
+    )
     _semaphore = threading.Semaphore(1)
 
     _COMMON_COMMAND_TEMPLATE = ("system", dedent("""
         /json
         /no_think
-    
-        You must return a final JSON **instance**, never a JSON Schema.
-        The top-level structure MUST be exactly:
-        {{"result":{{"slope_datums":[ ... ]}}}}
-    
+
         You have access to functions. If you decide to invoke any of the function(s),
         you MUST put it in the format of
         {{"result": dictionary of argument name and its value }}
-    
-        You SHOULD NOT include any other text in the response if you call a function
-    """))
 
-    @abstractmethod
-    def get_chain(self):
-        pass
+        You SHOULD NOT include any other text in the response if you call a function
+        """))
+
+    def __new__(cls, *args, **kwargs):
+        """
+        싱글턴 구현을 위한 함수입니다.
+
+        인스턴스를 호출할 땐 CommonLLM() 혹은 상속 객체를 호출해주세요.
+        """
+        with cls._lock:
+            if cls not in cls._instances:
+                instance = super().__new__(cls)
+                instance._template = [
+                    cls._COMMON_COMMAND_TEMPLATE,
+                    # 상속받은 자식 클래스에서 추가적으로 Template를 추가할 수 있도록 TemplatePattern을 적용
+                    *instance._add_template()
+                ]
+                instance._chain = (ChatPromptTemplate.from_messages(instance._template) | cls._common_model)
+                cls._instances[cls] = instance
+        return cls._instances[cls]
 
     @abstractmethod
     def _add_template(self) -> list[tuple]:
@@ -89,9 +95,7 @@ class CommonLLM(ABC):
             FAILURE_JSON_PARSING: JSON Decoding 실패 시, 빈 딕셔너리 반환
         """
         with self._semaphore:
-            answer: str = self.get_chain().invoke(parameter)
-
-        print(answer)
+            answer: str = self._chain.invoke(parameter).content
         clean_answer: str = self.clean_json_string(text=answer)
 
         # LOG. 사연용 로그
@@ -109,7 +113,7 @@ class CommonLLM(ABC):
     def clean_json_string(text: str) -> str:
         """
         요약:
-            LLM이 출력한 문자열에서 json, ` 마커와
+            LLM이 출력한 문자열에서 \`\`\`json, \`\`\` 마커와
             <think> ... </think> 블록을 제거하고 양쪽 공백을 정리한다.
 
         Parameters:
