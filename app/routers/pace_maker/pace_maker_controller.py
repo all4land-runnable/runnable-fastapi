@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from app.routers.pace_maker.pace_maker_dto import PaceMakerDTO
+from app.routers.pace_maker.pace_maker import PaceMakerDTO
 from app.routers.pace_maker.pace_maker_service import PaceMakerService
 from config.common.common_response import CommonResponse
 

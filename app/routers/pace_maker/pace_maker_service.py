@@ -1,5 +1,5 @@
 # app/routers/pace_records/pace_records_service.py
-from app.routers.pace_maker.pace_maker_dto import PaceMakerDTO
+from app.routers.pace_maker.pace_maker import PaceMakerDTO
 from config.llm.pace_maker_llm import PaceMakerLLM
 
 
