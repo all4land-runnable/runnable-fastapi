@@ -11,9 +11,10 @@ class Routes(Base):
     title = Column(String(255), nullable=False)
     description = Column(String(255), nullable=False)
 
-    distance = Column(Integer, nullable=False)
     high_height = Column(Float, nullable=False)
     low_height = Column(Float, nullable=False)
+    distance = Column(Integer, nullable=False)
+    pace = Column(Integer, nullable=False)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())

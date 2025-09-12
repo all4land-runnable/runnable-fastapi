@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from app.routers.pace_maker.pace_maker import PaceMakerDTO
+from app.routers.pace_maker.pace_maker import Route
 from app.routers.pace_maker.pace_maker_service import PaceMakerService
 from config.common.common_response import CommonResponse
 
@@ -19,8 +19,8 @@ def get_pace_maker_service() -> PaceMakerService:
     response_model=CommonResponse,
     status_code=status.HTTP_200_OK,
 )
-def calc_paces2(paceCreate:PaceMakerDTO, pace_maker_service: PaceMakerService = Depends(get_pace_maker_service)):
-    result = pace_maker_service.pace_maker(paceCreate)
+def calc_paces(route:Route, pace_maker_service: PaceMakerService = Depends(get_pace_maker_service)):
+    result = pace_maker_service.pace_maker(route)
     return CommonResponse(
         code=200,
         message="페이스 분석 완료",
