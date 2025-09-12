@@ -1,12 +1,12 @@
-# app/routers/pace_maker/pace_maker.py
 from pydantic import BaseModel
+
 
 class Section(BaseModel):
     distance: float
     slope: float
-    pace: float
     startPlace: str
-    strategies: list[str]
+    pace: float | None = None
+    strategies: list[str] | None = None
 
 class Route(BaseModel):
     luggageWeight: float

@@ -27,7 +27,7 @@ class PaceMakerLLM(CommonLLM):
         * 당신은 짐 무게(luggageWeight), 희망 페이스(paceSeconds), 시작 지점명(startPlace), 그리고 경로 정보(sections)를 통해 각 slopeDatum에 구간 정보의 속도(pace:s/km)을 추가해야 한다.
         * 입력 순서를 유지하고, 항목을 절대 추가/삭제하지 말 것.
         * pace 단위는 초/㎞(s/km)로 한다.
-        * pace 허용 범위: [210, 720] s/km (= 3.5–12.0 min/km).
+        * pace 값 허용 범위: [210, 720] s/km 로 제한
         * 경사 보정(초/㎞):
             - +1% ~ +3%: +6 ~ +18 s/km (선형)
             - -1% ~ -3%: -6 ~ -18 s/km (선형)
