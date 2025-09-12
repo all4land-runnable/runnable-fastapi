@@ -6,7 +6,7 @@ class Section(BaseModel):
     slope: float
     pace: float
     startPlace: str
-    strategies: str
+    strategies: list[str]
 
 class Route(BaseModel):
     luggageWeight: float
